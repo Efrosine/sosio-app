@@ -1,18 +1,61 @@
-import 'package:flutter/material.dart';
+import 'dart:developer';
 
-class ProfilePage extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:myapp/entity/post_entity.dart';
+import 'package:myapp/entity/user_entity.dart';
+import 'package:myapp/presentation/page/signin_page.dart';
+import 'package:myapp/service/api_service.dart';
+
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => ProfilePageState();
+}
+
+class ProfilePageState extends State<ProfilePage> {
+  final ApiService service = ApiService();
+  UserEntity? user;
+  List<PostEntity>? post;
+
+  Future<void> setUp() async {
+    user = await service.getCurrentUser();
+    post = await service.getCurrentUserPosts();
+    log('ini init', name: 'profile');
+    log(user?.username ?? 'kosong', name: 'profile');
+    setState(() {});
+  }
+  
+
+  @override
+  initState() {
+    setUp();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Karina',
+          user?.username ?? 'Karina',
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SigninPage(),
+                  ),
+                  (route) => true,
+                );
+              },
+              icon: Icon(Icons.logout))
+        ],
         elevation: 4,
       ),
       body: ListView(
@@ -27,7 +70,7 @@ class ProfilePage extends StatelessWidget {
                   flex: 3,
                   child: CircleAvatar(
                     radius: 110,
-                    backgroundImage: NetworkImage(
+                    backgroundImage: NetworkImage(user?.profilePicture ??
                         'https://wallpapercave.com/wp/wp8315545.jpg'),
                   ),
                 ),
@@ -43,7 +86,7 @@ class ProfilePage extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            '2,023',
+                            user?.postsCount.toString()??'0',
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           Text('Post'),
@@ -54,7 +97,7 @@ class ProfilePage extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            '2,023',
+                            user?.followersCount.toString()??'0',
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           Text('Folowers'),
@@ -65,7 +108,7 @@ class ProfilePage extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            '2,023',
+                            user?.followingCount.toString()??'0',
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           Text('Folowing'),
@@ -81,14 +124,14 @@ class ProfilePage extends StatelessWidget {
           GridView.builder(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
-            itemCount: 10,
+            itemCount: post?.length ?? 0,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: 4 / 5,
                 crossAxisSpacing: 1,
                 mainAxisSpacing: 1),
             itemBuilder: (context, index) => SizedBox(
-              child: Image.network(
+              child: Image.network(post?[index].image??
                 'https://wallpapercave.com/wp/wp8315545.jpg',
                 fit: BoxFit.cover,
               ),

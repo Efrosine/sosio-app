@@ -1,13 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/presentation/page/nav_bar.dart';
 import 'package:myapp/presentation/page/signup_page.dart';
+import 'package:myapp/service/api_service.dart';
 
-class SigninPage extends StatelessWidget {
+class SigninPage extends StatefulWidget {
   const SigninPage({super.key});
 
   @override
+  State<SigninPage> createState() => _SigninPageState();
+}
+
+class _SigninPageState extends State<SigninPage> {
+  final emailControl = TextEditingController();
+  final passwordControl = TextEditingController();
+  final ApiService service = ApiService();
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 77, 137),
+      backgroundColor: const Color.fromARGB(255, 33, 96, 244),
       body: SingleChildScrollView(
         child: SizedBox(
           height: MediaQuery.of(context).size.height,
@@ -45,6 +55,7 @@ class SigninPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 54),
                         TextField(
+                          controller: emailControl,
                           decoration: InputDecoration(
                             labelText: 'Email',
                             border: OutlineInputBorder(
@@ -55,7 +66,8 @@ class SigninPage extends StatelessWidget {
                         const SizedBox(height: 20),
                         // Suggested code may be subject to a license. Learn more: ~LicenseLog:1994651105.
                         TextField(
-                          obscureText: true,
+                          controller: passwordControl,
+                          // obscureText: true,
                           decoration: InputDecoration(
                             labelText: 'Password',
                             border: OutlineInputBorder(
@@ -67,7 +79,27 @@ class SigninPage extends StatelessWidget {
                         SizedBox(
                           width: double.infinity,
                           child: FilledButton(
-                              onPressed: () {}, child: Text('Login')),
+                              onPressed: () async {
+                                try {
+                                  var message = await service.login(
+                                      emailControl.text, passwordControl.text);
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(message),
+                                    ),
+                                  );
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => NavBar(),
+                                      ));
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text(e.toString())));
+                                }
+                              },
+                              child: Text('Login')),
                         ),
                         const SizedBox(height: 16),
                         TextButton(

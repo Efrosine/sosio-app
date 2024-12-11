@@ -5,13 +5,7 @@ import 'package:myapp/presentation/page/create_feed_page.dart';
 import 'package:myapp/presentation/page/home_page.dart';
 import 'package:myapp/presentation/page/profile_page.dart';
 
-enum _SelectedTab {
-  home,
-  // favorite,
-  add,
-  // search,
-  person,
-}
+
 
 class NavBar extends StatefulWidget {
   const NavBar({super.key});
@@ -22,11 +16,27 @@ class NavBar extends StatefulWidget {
 
 class _NavBarState extends State<NavBar> {
   var _selectedTab = _SelectedTab.home;
+  final GlobalKey<HomePageState> _homeKey = GlobalKey();
+  final GlobalKey<CreateFeedPageState> _createFeedKey = GlobalKey();
+  final GlobalKey<ProfilePageState> _profileKey = GlobalKey();
 
   void _handleIndexChanged(int i) {
     setState(() {
       _selectedTab = _SelectedTab.values[i];
     });
+
+    // Memanggil initState manual jika perlu
+    switch (_selectedTab) {
+      case _SelectedTab.home:
+        _homeKey.currentState?.initState();
+        break;
+      case _SelectedTab.add:
+        _createFeedKey.currentState?.initState();
+        break;
+      case _SelectedTab.person:
+        _profileKey.currentState?.initState();
+        break;
+    }
   }
 
   @override
@@ -36,18 +46,16 @@ class _NavBarState extends State<NavBar> {
       body: IndexedStack(
         index: _SelectedTab.values.indexOf(_selectedTab),
         children: [
-          // Halaman Home
-          HomePage(),
-          CreateFeedPage(),
-          ProfilePage(),
+          HomePage(key: _homeKey),
+          CreateFeedPage(key: _createFeedKey),
+          ProfilePage(key: _profileKey),
         ],
       ),
       bottomNavigationBar: CrystalNavigationBar(
         currentIndex: _SelectedTab.values.indexOf(_selectedTab),
         height: 10,
-        // indicatorColor: Colors.blue,
-        unselectedItemColor: Colors.pink[500],
-        backgroundColor: Colors.pink.withOpacity(0.1),
+        unselectedItemColor: Colors.blue[500],
+        backgroundColor: Colors.blue.withOpacity(0.1),
         boxShadow: [
           BoxShadow(
             color: Colors.white.withOpacity(0.5),
@@ -58,41 +66,32 @@ class _NavBarState extends State<NavBar> {
         ],
         onTap: _handleIndexChanged,
         items: [
-          /// Home
           CrystalNavigationBarItem(
             icon: IconlyBold.home,
             unselectedIcon: IconlyLight.home,
-            selectedColor: Colors.pink,
+            selectedColor: Colors.blue,
           ),
-
-          /// Favourite
-          // CrystalNavigationBarItem(
-          //   icon: IconlyBold.heart,
-          //   unselectedIcon: IconlyLight.heart,
-          //   selectedColor: Colors.red,
-          // ),
-
-          /// Add
           CrystalNavigationBarItem(
             icon: IconlyBold.plus,
             unselectedIcon: IconlyLight.plus,
-            selectedColor: Colors.pink,
+            selectedColor: Colors.blue,
           ),
-
-          /// Search
-          // CrystalNavigationBarItem(
-          //     icon: IconlyBold.search,
-          //     unselectedIcon: IconlyLight.search,
-          //     selectedColor: Colors.pink),
-
-          /// Profile
           CrystalNavigationBarItem(
             icon: IconlyBold.user_2,
             unselectedIcon: IconlyLight.user,
-            selectedColor: Colors.pink,
+            selectedColor: Colors.blue,
           ),
         ],
       ),
     );
   }
+}
+
+
+enum _SelectedTab {
+  home,
+  // favorite,
+  add,
+  // search,
+  person,
 }

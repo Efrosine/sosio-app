@@ -1,16 +1,51 @@
-import 'package:flutter/material.dart';
-import 'package:myapp/presentation/page/signin_page.dart';
+import 'dart:io';
 
-class SignupPage extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:myapp/presentation/page/signin_page.dart';
+import 'package:myapp/service/api_service.dart';
+
+class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
+
+  @override
+  State<SignupPage> createState() => _SignupPageState();
+}
+
+class _SignupPageState extends State<SignupPage> {
+  // // This is the file that will be used to store the image
+  // File? _image;
+
+  // // This is the image picker
+  // final _picker = ImagePicker();
+  // // Implementing the image picker
+  // Future<void> _openImagePicker() async {
+  //   final XFile? pickedImage =
+  //       await _picker.pickImage(source: ImageSource.gallery);
+  //   if (pickedImage != null) {
+  //     setState(() {
+  //       _image = File(pickedImage.path);
+  //     });
+  //   }
+  // }
+
+  final ApiService service = ApiService();
+
+  final usernameControl = TextEditingController();
+  final emailControl = TextEditingController();
+  final passwordControl = TextEditingController();
+  final bioControl = TextEditingController();
+  final profilelControl = TextEditingController.fromValue(TextEditingValue(
+      text:
+          'https://www.kpopmonster.jp/wp-content/uploads/2021/07/karina_01.jpg'));
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 77, 137),
+      backgroundColor: const Color.fromARGB(255, 33, 96, 244),
       body: SingleChildScrollView(
         child: SizedBox(
-          height: MediaQuery.of(context).size.height,
+          height: MediaQuery.of(context).size.height + 200,
           width: MediaQuery.of(context).size.width,
           child: Stack(
             children: [
@@ -45,8 +80,9 @@ class SignupPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 54),
                         TextField(
+                          controller: usernameControl,
                           decoration: InputDecoration(
-                            labelText: 'Name',
+                            labelText: 'Username',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
@@ -54,6 +90,7 @@ class SignupPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 20),
                         TextField(
+                          controller: emailControl,
                           decoration: InputDecoration(
                             labelText: 'Email',
                             border: OutlineInputBorder(
@@ -64,7 +101,8 @@ class SignupPage extends StatelessWidget {
                         const SizedBox(height: 20),
                         // Suggested code may be subject to a license. Learn more: ~LicenseLog:1994651105.
                         TextField(
-                          obscureText: true,
+                          controller: passwordControl,
+                          // obscureText: true,
                           decoration: InputDecoration(
                             labelText: 'Password',
                             border: OutlineInputBorder(
@@ -72,11 +110,74 @@ class SignupPage extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 20),
+                        TextField(
+                          controller: bioControl,
+                          decoration: InputDecoration(
+                            labelText: 'Bio',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        TextField(
+                          controller: profilelControl,
+                          decoration: InputDecoration(
+                            labelText: 'Profile Picture',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                        ),
+
+                        // SizedBox(
+                        //     height: 150,
+                        //     child: Row(
+                        //       children: [
+                        //         Expanded(
+                        //           child: Container(
+                        //             height: double.infinity,
+                        //             color: Colors.grey,
+                        //             child: _image != null
+                        //                 ? Image.file(_image!, fit: BoxFit.cover)
+                        //                 : const Text('Please select an image'),
+                        //           ),
+                        //         ),
+                        //         SizedBox(width: 16),
+                        //         Expanded(
+                        //             child: ElevatedButton(
+                        //                 onPressed: _openImagePicker,
+                        //                 child: Text('Pick Picture'))),
+                        //       ],
+                        //     )),
+                        // const SizedBox(height: 32),
                         SizedBox(
                           width: double.infinity,
                           child: FilledButton(
-                              onPressed: () {}, child: Text('Register')),
+                              onPressed: () async {
+                                try {
+                                  var meesage = await service.register(
+                                      usernameControl.text,
+                                      emailControl.text,
+                                      passwordControl.text,
+                                      bioControl.text,
+                                      profilelControl.text);
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text(meesage)));
+
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => SigninPage(),
+                                      ));
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text(e.toString())));
+                                }
+                              },
+                              child: Text('Register')),
                         ),
                         const SizedBox(height: 16),
                         TextButton(
