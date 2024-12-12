@@ -28,7 +28,7 @@ class ApiService {
       return 'login berhasil';
     } on DioException catch (e) {
       return Future.error(
-          Exception(e.response?.data['errors'] ?? 'message error nulll'));
+          Exception(e.response?.data['message'] ?? 'message error nulll'));
     }
   }
 
@@ -45,7 +45,7 @@ class ApiService {
       return 'proses register berhasil';
     } on DioException catch (e) {
       return Future.error(
-          Exception(e.response?.data['errors'] ?? 'message error nullll'));
+          Exception(e.response?.data['message'] ?? 'message error nullll'));
     }
   }
 
@@ -63,7 +63,6 @@ class ApiService {
   Future<List<PostEntity>> getAllPosts() async {
     try {
       String? token = await pref.getString('token');
-
       final response = await _dio.get(
         '/posts',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
@@ -75,13 +74,14 @@ class ApiService {
           Exception('Failed to load posts: ${e.response?.data['message']}'));
     }
   }
+
   Future<List<PostEntity>> getCurrentUserPosts() async {
     try {
       String? token = await pref.getString('token');
       int? id = await pref.getInt('id');
 
       final response = await _dio.get(
-        '/users/${id??1}/posts',
+        '/users/${id ?? 1}/posts',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       List<dynamic> data = response.data as List<dynamic>;
@@ -102,6 +102,18 @@ class ApiService {
     } on DioException catch (e) {
       return Future.error(
           Exception('Failed to create post: ${e.response?.data['message']}'));
+    }
+  }
+  Future<String> updatePost(String content, String image,int id) async {
+    try {
+      String? token = await pref.getString('token');
+      final response = await _dio.put('/posts/$id',
+          options: Options(headers: {'Authorization': 'Bearer $token'}),
+          data: {"content": content, "image": image});
+      return 'berhasil update feed';
+    } on DioException catch (e) {
+      return Future.error(
+          Exception('Failed to update post: ${e.response?.data['message']}'));
     }
   }
 

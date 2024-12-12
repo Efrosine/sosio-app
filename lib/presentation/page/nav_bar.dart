@@ -1,11 +1,9 @@
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
-import 'package:myapp/presentation/page/create_feed_page.dart';
+import 'package:myapp/presentation/page/curd_feed_page.dart';
 import 'package:myapp/presentation/page/home_page.dart';
 import 'package:myapp/presentation/page/profile_page.dart';
-
-
 
 class NavBar extends StatefulWidget {
   const NavBar({super.key});
@@ -17,7 +15,7 @@ class NavBar extends StatefulWidget {
 class _NavBarState extends State<NavBar> {
   var _selectedTab = _SelectedTab.home;
   final GlobalKey<HomePageState> _homeKey = GlobalKey();
-  final GlobalKey<CreateFeedPageState> _createFeedKey = GlobalKey();
+  final GlobalKey<CrudPageState> _createFeedKey = GlobalKey();
   final GlobalKey<ProfilePageState> _profileKey = GlobalKey();
 
   void _handleIndexChanged(int i) {
@@ -47,7 +45,7 @@ class _NavBarState extends State<NavBar> {
         index: _SelectedTab.values.indexOf(_selectedTab),
         children: [
           HomePage(key: _homeKey),
-          CreateFeedPage(key: _createFeedKey),
+          CrudPage(key: _createFeedKey),
           ProfilePage(key: _profileKey),
         ],
       ),
@@ -86,7 +84,6 @@ class _NavBarState extends State<NavBar> {
     );
   }
 }
-
 
 enum _SelectedTab {
   home,
