@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'https://sosioapi.efrosine.my.id/api',
+    baseUrl: 'https://sosiov2.efrosine.my.id/api',
     headers: {'Accept': 'application/json'},
   ));
   final SharedPreferencesAsync pref = SharedPreferencesAsync();
@@ -104,7 +104,8 @@ class ApiService {
           Exception('Failed to create post: ${e.response?.data['message']}'));
     }
   }
-  Future<String> updatePost(String content, String image,int id) async {
+
+  Future<String> updatePost(String content, String image, int id) async {
     try {
       String? token = await pref.getString('token');
       final response = await _dio.put('/posts/$id',
